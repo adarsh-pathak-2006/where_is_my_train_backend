@@ -16,6 +16,7 @@ class TrainStation(models.Model):
     station=models.ForeignKey(Station, on_delete=models.CASCADE, related_name='train_stations')
     stopping_time=models.DurationField()
     distance_from_origin=models.PositiveIntegerField(default=0)
+    added_on=models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"train {self.train.name} at {self.station.name}"
