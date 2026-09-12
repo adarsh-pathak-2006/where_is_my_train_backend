@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Train, TrainStation
 
-# Register your models here.
+admin.site.register(TrainStation)
+admin.site.register(Train)
