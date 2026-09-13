@@ -6,8 +6,12 @@ from rest_framework.response import Response
 from django.core.cache import cache
 from wimt.cache_key import train_list_cache_key, train_all_station_cache_key
 from wimt.pagination import GeneralPagination
+from station.models import Station
+from django.db.models import Q
+from rest_framework.permissions import AllowAny
 
 class AllTrain(APIView):
+    permission_classes=[AllowAny]
     def get(self, request):
         page_no=request.query_param.get("page", "1")
         cached_data=cache.get(train_list_cache_key(pageno=page_no))
@@ -21,6 +25,7 @@ class AllTrain(APIView):
         return Response(response.data)
 
 class TrainStationAPI(APIView):
+    permission_classes=[AllowAny]
     def get(self, request, pk):
         cached_data=cache.get(train_all_station_cache_key(train_id=pk))
         if cached_data:
@@ -28,4 +33,15 @@ class TrainStationAPI(APIView):
         data=TrainStation.objects.select_related('train__id').filter(train__id=pk)
         serial=TrainStationSerializer(data, many=True)
         cache.set(train_all_station_cache_key(train_id=pk), serial.data, timeout=6000)
+        return Response(serial.data, status=200)
+
+class TrainEnquiryBasedOnStationAPI(APIView):
+    permission_classes=[AllowAny]
+    def get(self, request):
+        from_station=request.query_params.get("from")
+        to_station=request.query_params.get("to")
+        from_station_data=get_object_or_404(Station, name=from_station)
+        to_station_data=get_object_or_404(Station, name=to_station)
+        train_data=TrainStation.objects.select_related('train', 'station').filter(Q(station=from_station_data) | Q(station=to_station_data)).filter("sequence")
+        serial=TrainStationSerializer(train_data, many=True)
         return Response(serial.data, status=200)
