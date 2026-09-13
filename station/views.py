@@ -6,8 +6,13 @@ from rest_framework.response import Response
 from wimt.pagination import GeneralPagination
 from django.core.cache import cache
 from wimt.cache_key import station_cache_key
+from rest_framework.permissions import AllowAny, IsAdminUser
 
 class StationAPI(APIView):
+    def get_permissions(self):
+        if self.request.method=='GET':
+            return [AllowAny()]
+        return [IsAdminUser()]
     def get(self, request):
         page_no=request.query_params.get("page", "1")
         cached_data=cache.get(station_cache_key(pageno=page_no))
