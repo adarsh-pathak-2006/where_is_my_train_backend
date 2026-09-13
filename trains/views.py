@@ -42,18 +42,20 @@ class TrainEnquiryBasedOnStationAPI(APIView):
         to_station=request.query_params.get("to")
         from_station_data=get_object_or_404(Station, name=from_station)
         to_station_data=get_object_or_404(Station, name=to_station)
-        trains = Train.objects.filter(
-            stations__station=from_station_data
-        ).filter(
-            stations__station=to_station_data
-        ).distinct()
 
-        valid_trains = []
-        for train in trains:
-            from_seq = train.stations.get(station=from_station_data).sequence
-            to_seq = train.stations.get(station=to_station_data).sequence
-            if from_seq < to_seq:
-                valid_trains.append(train)
+        # Get all TrainStation mappings for these two stations
+        ts_from = TrainStation.objects.filter(station=from_station_data)
+        ts_to = TrainStation.objects.filter(station=to_station_data)
 
+        # Map train_id -> sequence for the "to" stations to allow fast lookup
+        to_sequences = {ts.train_id: ts.sequence for ts in ts_to}
+
+        valid_train_ids = []
+        for ts in ts_from:
+            to_seq = to_sequences.get(ts.train_id)
+            if to_seq is not None and ts.sequence < to_seq:
+                valid_train_ids.append(ts.train_id)
+
+        valid_trains = Train.objects.select_related('starting_station', 'ending_station').filter(id__in=valid_train_ids)
         serial = TrainSerializer(valid_trains, many=True)
         return Response(serial.data, status=200)
