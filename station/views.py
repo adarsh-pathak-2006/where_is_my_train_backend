@@ -34,7 +34,7 @@ class StationAPI(APIView):
 
 
 class TrainOnStationAPI(APIView):
-    def get(self, request):
-        data=Station.objects.all()
+    def get(self, request, pk):
+        data=get_object_or_404(Station, id=pk)
         serial=TrainOnStationSerializer(data)
         return Response(serial.data, status=200)
