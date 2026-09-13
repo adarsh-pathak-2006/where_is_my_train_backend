@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from .models import Station
-from .serializers import StationSerializer
+from .serializers import StationSerializer, TrainOnStationSerializer
 from rest_framework.response import Response
 from wimt.pagination import GeneralPagination
 from django.core.cache import cache
@@ -31,5 +31,10 @@ class StationAPI(APIView):
             serial.save()
             return Response(serial.data, status=201)
         return Response(serial.errors, status=400)    
-        
 
+
+class TrainOnStationAPI(APIView):
+    def get(self, request):
+        data=Station.objects.all()
+        serial=TrainOnStationSerializer(data)
+        return Response(serial.data, status=200)
