@@ -14,7 +14,9 @@ class Train(models.Model):
 class TrainStation(models.Model):
     train=models.ForeignKey(Train, on_delete=models.CASCADE, related_name='stations')
     station=models.ForeignKey(Station, on_delete=models.CASCADE, related_name='train_stations')
-    stopping_time=models.DurationField()
+    sequence=models.PositiveIntegerField()
+    arrival_time=models.TimeField()
+    departure_time=models.TimeField()
     distance_from_origin=models.PositiveIntegerField(default=0)
     added_on=models.DateTimeField(auto_now_add=True)
 
