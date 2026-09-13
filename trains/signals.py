@@ -13,4 +13,4 @@ def train_list_cache_invalidation(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=TrainStation)
 def TrainStationCacheInvalidation(sender, instance, created, **kwargs):
-    cache.delete(train_all_station_cache_key(instance.id))
+    cache.delete(train_all_station_cache_key(instance.train.id))

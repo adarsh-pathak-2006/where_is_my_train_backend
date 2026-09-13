@@ -42,6 +42,6 @@ class TrainEnquiryBasedOnStationAPI(APIView):
         to_station=request.query_params.get("to")
         from_station_data=get_object_or_404(Station, name=from_station)
         to_station_data=get_object_or_404(Station, name=to_station)
-        train_data=TrainStation.objects.select_related('train', 'station').filter(Q(station=from_station_data) | Q(station=to_station_data)).filter("sequence")
+        train_data=TrainStation.objects.select_related('train', 'station').filter(Q(station=from_station_data) | Q(station=to_station_data)).order_by("sequence")
         serial=TrainStationSerializer(train_data, many=True)
         return Response(serial.data, status=200)

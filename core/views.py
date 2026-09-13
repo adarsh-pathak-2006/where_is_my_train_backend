@@ -15,9 +15,10 @@ class CurrentStatusAPI(APIView):
         serial=CurrentStationGetSerializer(data)
         return Response(serial.data, status=200)
 
-    def post(self, request, name):
-        serial=CurrentStationSerializer(data=request.data)
+    def patch(self, request, name):
+        instance=get_object_or_404(CurrentStatus.objects.select_related('train'), train__name=name)
+        serial=CurrentStationSerializer(instance, data=request.data, partial=True)
         if serial.is_valid():
             serial.save()
-            return Response(serial.data, status=201)
+            return Response(serial.data, status=200)
         return Response(serial.errors, status=400)

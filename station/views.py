@@ -26,7 +26,7 @@ class StationAPI(APIView):
         return response
 
     def post(self, request):
-        serial=StationSerializer(request.data)
+        serial=StationSerializer(data=request.data)
         if serial.is_valid():
             serial.save()
             return Response(serial.data, status=201)

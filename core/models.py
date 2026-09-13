@@ -12,8 +12,12 @@ class CurrentStatus(models.Model):
     updated_on=models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
-        if not TrainStation.objects.select_related('train', 'station').filter(models.Q(train=self.train), models.Q(station=self.previous_station), models.Q(station=self.upcoming_station), models.Q(station=self.nearest_station)).exists():
-            raise ValueError("Previous, Upcoming and nearest Stations must be in the Train Route Stations")
+        if self.previous_station is not None and not TrainStation.objects.select_related('train', 'station').filter(models.Q(train=self.train), models.Q(station=self.previous_station)).exists():
+            raise ValueError("Previous Stations must be in the Train Route Stations")
+        if self.upcoming_station is not None and not TrainStation.objects.select_related('train', 'station').filter(models.Q(train=self.train), models.Q(station=self.upcoming_station)).exists():
+            raise ValueError("Upcoming Station must be in the Train Route Stations")
+        if self.nearest_station is not None and not TrainStation.objects.select_related('train', 'station').filter(models.Q(train=self.train), models.Q(station=self.nearest_station)).exists():
+            raise ValueError("nearest station must be in the Train Route Stations")
         return super().save(*args, **kwargs)
 
     def __str__(self):
