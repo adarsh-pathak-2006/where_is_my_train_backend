@@ -10,7 +10,7 @@ from station.models import Station
 from django.db.models import Q
 from rest_framework.permissions import AllowAny
 
-class AllTrain(APIView):
+class AllTrainAPI(APIView):
     permission_classes=[AllowAny]
     def get(self, request):
         page_no=request.query_param.get("page", "1")
