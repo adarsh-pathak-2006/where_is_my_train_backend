@@ -2,7 +2,7 @@ from django.db import models
 from station.models import Station
 
 class Train(models.Model):
-    name=models.CharField(max_length=300)
+    name=models.CharField(max_length=300, unique=True)
     starting_station=models.ForeignKey(Station, on_delete=models.CASCADE, related_name='trains_starting')
     ending_station=models.ForeignKey(Station, on_delete=models.CASCADE, related_name='trains_ending')
     train_type=models.CharField(max_length=15, choices=[('SUPERFAST', 'SUPERFAST'), ('PASSENGER', 'PASSENGER'), ('MEMU', 'MEMU'), ('EXPRESS', 'EXPRESS')])

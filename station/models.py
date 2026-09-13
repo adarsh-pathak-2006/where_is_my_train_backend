@@ -1,7 +1,7 @@
 from django.db import models
 
 class Station(models.Model):
-    name=models.CharField(max_length=300)
+    name=models.CharField(max_length=300, unique=True)
     state=models.CharField(max_length=100)
     added_on=models.DateTimeField(auto_now_add=True)
 
