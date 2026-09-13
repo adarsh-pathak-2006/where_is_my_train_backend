@@ -3,9 +3,11 @@ from wimt.cache_key import train_all_station_cache_key, train_list_cache_key
 from .models import TrainStation, Train
 from django.db.models.signals import post_save
 from django.core.cache import cache
+from core.models import CurrentStatus
 
 @receiver(post_save, sender=Train)
 def train_list_cache_invalidation(sender, instance, created, **kwargs):
+    CurrentStatus.objects.create(train=instance)
     for i in range(1, 101):
         cache.delete(train_list_cache_key(pageno=i))
 
